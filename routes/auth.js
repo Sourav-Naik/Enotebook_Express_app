@@ -75,6 +75,10 @@ Router.post(
 
       await newUser.save();
 
+      if (req.file) {
+        fs.unlinkSync(path.join(req.file.destination, req.file.originalname));
+      }
+
       return res.json({ success: true, msg: "Registration Successful" });
     } catch (error) {
       return res.status(500).json({ msg: "Internal Server Error" });
