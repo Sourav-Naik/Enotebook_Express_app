@@ -6,11 +6,11 @@ import bcrypt from "bcryptjs";
 import jsonWebToken from "jsonwebtoken";
 import multer from "multer";
 import fs from "fs";
+import path from "path";
 
 const Router = express.Router();
 
-let Profile = process.cwd();
-Profile = Profile + "\\Profile"; //location
+const Profile = path.join(process.cwd(), "Profile");
 
 // Configure Multer for file upload
 const storage = multer.diskStorage({
@@ -48,8 +48,10 @@ Router.post(
 
       const { email, name, password } = req.body;
       const uploadedPic = req.file
-        ? fs.readFileSync(req.file.destination + "\\" + req.file.originalname)
-        : fs.readFileSync(Profile + "\\defaultProfilePic.jpg");
+        ? fs.readFileSync(
+            path.join(req.file.destination, req.file.originalname)
+          )
+        : fs.readFileSync(path.join(Profile, "defaultProfilePic.jpg"));
 
       // Check if user with email exists
       const existingUser = await User.findOne({ email });
@@ -68,7 +70,6 @@ Router.post(
         name,
         email,
         password: hashedPassword,
-        image: uploadedPic,
         imageBuffer: uploadedPic.toString("base64"),
       });
 
@@ -172,10 +173,9 @@ Router.post(
         newUserName.name = name;
       }
       if (req.file) {
-        const uploadedPic = req.file
-          ? fs.readFileSync(req.file.destination + "\\" + req.file.originalname)
-          : fs.readFileSync(Profile + "\\defaultProfilePic.jpg");
-        newUserName.image = uploadedPic;
+        const uploadedPic = fs.readFileSync(
+          path.join(req.file.destination, req.file.originalname)
+        );
         newUserName.imageBuffer = uploadedPic.toString("base64");
       }
       let user = await User.findByIdAndUpdate(
