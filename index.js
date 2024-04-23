@@ -4,9 +4,12 @@ import cors from "cors";
 import path from "path";
 import auth from "./routes/auth.js";
 import notes from "./routes/notes.js";
+import dotenv from "dotenv";
 
 const app = express();
 app.use(express.json());
+
+dotenv.config();
 
 // Enable CORS for frontend access
 app.use(
@@ -28,12 +31,12 @@ app.get("*", (req, res) => {
 
 // Start the server
 mongoose
-  .connect("mongodb://localhost:27017/enotebook")
+  .connect(process.env.Mongo)
   .then(() => {
     console.log("Connected to the database");
     // Start the server
-    app.listen(5000, async () => {
-      console.log(`Server is running on port ${5000}`);
+    app.listen(process.env.port || 5000, async () => {
+      console.log(`Server is running on port ${process.env.port || 5000}`);
     });
   })
   .catch((err) => {

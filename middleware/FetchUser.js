@@ -3,7 +3,7 @@ const FetchUser = async (req, res, next) => {
   /*----------------get user detailes from token------------------- */
   const token = await req.header("auth-token");
   try {
-    let data = jsonWebToken.verify(token, "Sourav");
+    let data = jsonWebToken.verify(token, process.env.JWT_TOKEN);
     req.userData = data.id;
     next();
   } catch (error) {
