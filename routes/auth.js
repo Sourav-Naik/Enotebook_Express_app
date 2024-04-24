@@ -38,13 +38,6 @@ Router.post(
   async (req, res) => {
     try {
       let { email, name, password, googleLogin, googleCredentail } = req.body;
-      // Check if user with email exists
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res
-          .status(400)
-          .json({ success: false, msg: "User already exists" });
-      }
 
       // set email and password for google login
       if (googleLogin === "true") {
@@ -52,6 +45,20 @@ Router.post(
         email = googleCredentail.email;
         password = googleCredentail.sub + process.env.secret;
         name = googleCredentail.name;
+      }
+
+      // Check if user with email exists
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        if (existingUser.googleLogin === true) {
+          return res.status(400).json({
+            success: false,
+            msg: "User has already registered using Google",
+          });
+        }
+        return res
+          .status(400)
+          .json({ success: false, msg: "User already exists" });
       }
 
       // Validate request body

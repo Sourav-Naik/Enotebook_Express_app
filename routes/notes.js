@@ -20,7 +20,7 @@ Router.post(
   "/addnewnote", //end point
   FetchUser, //middleware to fetch user
   [
-    body("title", "Enter a valid title").isLength({ min: 5 }),
+    body("title", "Enter a valid title").isLength({ min: 4 }),
     body("description", "Description must be atleast 10 chararcters ").isLength(
       { min: 10 }
     ),
