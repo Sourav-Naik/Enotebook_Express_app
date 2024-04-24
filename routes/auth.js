@@ -10,14 +10,14 @@ import path from "path";
 import { SMTPClient } from "emailjs";
 
 const Router = express.Router();
-const Profile = path.join(process.cwd(), "Profile");
+
 // Configure Multer for file upload
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, Profile);
+    cb(null, process.cwd());
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    cb(null, "profile.jpg");
   },
 });
 const upload = multer({ storage: storage });
@@ -65,11 +65,9 @@ Router.post(
       }
 
       //setting profilepic
-      const uploadedPic = req.file
-        ? fs.readFileSync(
-            path.join(req.file.destination, req.file.originalname)
-          )
-        : fs.readFileSync(path.join(Profile, "defaultProfilePic.jpg"));
+      const uploadedPic = fs.readFileSync(
+        path.join(process.cwd(), "profile.jpg")
+      );
 
       // Hash password
       const salt = await bcrypt.genSalt(10);
@@ -83,11 +81,6 @@ Router.post(
         password: hashedPassword,
         imageBuffer: uploadedPic.toString("base64"),
       });
-
-      // delete the image from local storage
-      if (req.file) {
-        fs.unlinkSync(path.join(req.file.destination, req.file.originalname));
-      }
 
       return res.json({ success: true, msg: "Registration Successful" });
     } catch (error) {
@@ -191,7 +184,7 @@ Router.post(
       }
       if (req.file) {
         const uploadedPic = fs.readFileSync(
-          path.join(req.file.destination, req.file.originalname)
+          path.join(process.cwd(), "profile.jpg")
         );
         newUser.imageBuffer = uploadedPic.toString("base64");
       }
@@ -200,9 +193,6 @@ Router.post(
         { $set: newUser },
         { new: true }
       );
-      if (req.file) {
-        fs.unlinkSync(path.join(req.file.destination, req.file.originalname));
-      }
       res.json({
         name: user.name,
         image: user.imageBuffer,

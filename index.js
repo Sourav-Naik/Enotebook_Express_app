@@ -5,6 +5,7 @@ import path from "path";
 import auth from "./routes/auth.js";
 import notes from "./routes/notes.js";
 import dotenv from "dotenv";
+import fs from "fs";
 
 const app = express();
 app.use(express.json());
@@ -29,6 +30,14 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(process.cwd(), "build", "index.html"));
 });
 
+// creating image file to store profile pic data
+fs.writeFile("profile.jpg", "", (err) => {
+  if (err) {
+    console.error("Error creating file:", err);
+    return;
+  }
+  console.log("Image file created successfully!");
+});
 // Start the server
 mongoose
   .connect(process.env.Mongo)
